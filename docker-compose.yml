@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  # Build React frontend
+  frontend-builder:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - frontend-dist:/app/dist
+
+  # Django backend serving everything
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - DATABASE_ENGINE=django.db.backends.sqlite3
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./backend:/app
+      - ./frontend-dist:/app/static
+    depends_on:
+      frontend-builder:
+        condition: service_completed_successfully
+
+volumes:
+  frontend-dist:

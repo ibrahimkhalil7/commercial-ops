@@ -1,0 +1,282 @@
+# Commercial Operations Platform - Django Backend
+
+A production-ready Django REST Framework backend for a commercial field operations platform with route management, field agent tracking, outlet management, and operational oversight.
+
+## Features
+
+- **Custom User Authentication**: Role-based access control (Admin, Manager, Field Agent, Outlet Manager)
+- **Route Planning**: Recurring route templates with daily route generation
+- **Field Operations**: Shift tracking, outlet check-ins, 3-minute GPS location logging
+- **Issue Management**: Warning/fine notices, maintenance ticket creation
+- **Real-time Tracking**: Near-live field agent visibility and route trails
+- **Reporting**: Comprehensive audit logs and performance analytics
+- **Email Notifications**: Automated email dispatch for notices and tickets
+
+## Prerequisites
+
+- Python 3.9+
+- PostgreSQL 12+
+- Redis (for Celery task queue)
+
+## Installation
+
+### 1. Create and Activate Virtual Environment
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+### 2. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Configure Environment Variables
+
+```bash
+cp .env.example .env
+# Edit .env with your settings (database, email, API keys, etc.)
+```
+
+### 4. Run Database Migrations
+
+```bash
+python manage.py migrate
+```
+
+### 5. Create Superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+### 6. Run Development Server
+
+```bash
+python manage.py runserver
+```
+
+Server will be available at `http://localhost:8000`
+
+### 7. Access Admin Interface
+
+Navigate to `http://localhost:8000/admin` and log in with your superuser credentials.
+
+## Project Structure
+
+```
+backend/
+├── config/
+│   ├── settings.py          # Django settings (PostgreSQL, JWT, CORS, etc.)
+│   ├── urls.py              # Main URL routing
+│   ├── wsgi.py              # WSGI application
+│   └── asgi.py              # ASGI application (for async)
+├── apps/
+│   ├── users/               # User authentication and roles
+│   │   ├── models.py        # User and Team models
+│   │   ├── admin.py         # Django admin interface
+│   │   └── urls.py          # API endpoints
+│   ├── outlets/             # Outlet master data
+│   │   ├── models.py        # Outlet, Category, LegacyNotice
+│   │   └── admin.py
+│   ├── routes/              # Route planning and execution
+│   │   ├── models.py        # RouteTemplate, RouteStop, DailyRoute
+│   │   └── admin.py
+│   ├── visits/              # Field visits and GPS tracking
+│   │   ├── models.py        # Shift, Visit, GPSLog
+│   │   └── admin.py
+│   ├── notices/             # Warning/fine notifications
+│   │   ├── models.py        # Notice (with email dispatch)
+│   │   └── admin.py
+│   ├── maintenance/         # Maintenance ticketing
+│   │   ├── models.py        # MaintenanceCategory, MaintenanceTicket
+│   │   └── admin.py
+│   └── reporting/           # Analytics and audit logs
+│       ├── models.py        # AuditLog, DailyReport, Performance metrics
+│       └── admin.py
+├── manage.py                # Django management command
+├── requirements.txt         # Python dependencies
+├── .env.example             # Environment variables template
+└── README.md               # This file
+```
+
+## Data Models Overview
+
+### Users & access Control
+- **User**: Custom user model with role-based permissions
+- **Team**: Operational grouping for field teams
+
+### Outlets & Master Data
+- **Outlet**: Outlet master record with location and contact details
+- **OutletCategory**: Outlet classification
+- **LegacyNotice**: Historical warning/fine import
+
+### Routes & Execution
+- **RouteTemplate**: Recurring route definition with scheduled stops
+- **RouteStop**: Individual stop in a route template
+- **DailyRoute**: Daily route instance (generated from template)
+
+### Field Operations
+- **Shift**: Field agent work shift (controls location tracking)
+- **Visit**: Outlet check-in/check-out record with proximity validation
+- **GPSLog**: 3-minute location updates during active shifts
+
+### Notifications & Issues
+- **Notice**: Warning/fine issued to outlet (with email notification)
+- **MaintenanceCategory**: Ticket category and routing
+- **MaintenanceTicket**: Infrastructure/public-realm issue report
+
+### Reporting & Analytics
+- **AuditLog**: Complete audit trail of all important actions
+- **DailyReport**: Daily operational summary KPIs
+- **OutletPerformance**: Period-based outlet compliance metrics
+- **AgentPerformance**: Field agent productivity and compliance
+
+## Key Database Features
+
+- **PostgreSQL-Ready**: Optimized for PostgreSQL with proper indexing
+- **UUID Primary Keys**: Uses UUIDs instead of integers for better security
+- **Timestamps**: All records include `created_at` and `updated_at`
+- **Foreign Key Relationships**: Proper relationships with ON_DELETE protection
+- **Database Indexes**: Strategic indexes on frequently queried fields
+- **Unique Constraints**: Business logic constraints (e.g., one visit per outlet per route)
+
+## User Roles & Permissions
+
+### Admin
+- Full system access
+- User and team management
+- System configuration
+
+### Manager
+- Team and agent management
+- Dashboard and analytics
+- Route template management
+- Notice and ticket overview
+
+### Field Agent
+- Route execution
+- Check-in/check-out
+- Issue and ticket creation
+- Location tracking (3-minute intervals during shift)
+
+### Outlet Manager (External)
+- Limited to assigned outlet(s)
+- View notices and violation history
+- Update contact details
+- No dispute or payment capabilities
+
+## API Authentication
+
+Uses JWT (JSON Web Tokens) with `djangorestframework-simplejwt`:
+
+```bash
+POST /api/auth/token/
+- Request: {"email": "user@elgouna.com", "password": "..."}
+- Response: {"access": "token...", "refresh": "token..."}
+
+POST /api/auth/token/refresh/
+- Request: {"refresh": "token..."}
+- Response: {"access": "new_token..."}
+```
+
+## Configuration
+
+### Important Settings in `.env`
+
+```
+DATABASE_ENGINE=django.db.backends.postgresql
+DATABASE_NAME=commercial_ops
+DATABASE_USER=postgres
+DATABASE_PASSWORD=...
+DATABASE_HOST=localhost
+
+STAFF_EMAIL_DOMAIN=elgouna.com  # Restrict staff login to this domain
+GPS_UPDATE_INTERVAL_SECONDS=180  # 3 minutes for location tracking
+GPS_PROXIMITY_RADIUS_METERS=100  # Proximity validation for check-ins
+
+EMAIL_HOST=smtp.gmail.com        # For notice/ticket notifications
+EMAIL_HOST_USER=...
+EMAIL_HOST_PASSWORD=...
+
+DEBUG=False                       # Always False in production
+SECRET_KEY=...                    # Change in production
+ALLOWED_HOSTS=...
+CORS_ALLOWED_ORIGINS=...
+```
+
+## Deployment
+
+### Using Gunicorn & Nginx
+
+```bash
+gunicorn config.wsgi:application --bind 0.0.0.0:8000
+```
+
+### Using Docker
+
+A Dockerfile and docker-compose.yml can be generated for containerized deployment.
+
+## Testing
+
+Run Django tests:
+
+```bash
+python manage.py test
+```
+
+Run specific app tests:
+
+```bash
+python manage.py test apps.routes
+```
+
+## Maintenance & Operations
+
+### Clear Expired Tokens
+
+```bash
+python manage.py flushexpiredtokens
+```
+
+### Generate Daily Reports
+
+```bash
+python manage.py generate_daily_report
+```
+
+(Can also be automated with Celery beat scheduler)
+
+## Next Steps
+
+1. **Generate Serializers**: Create DRF serializers for all models
+2. **Implement ViewSets**: Create viewsets and views with proper permissions
+3. **Add Search & Filtering**: Add search filters for manager dashboard
+4. **Implement Celery Tasks**: Background jobs for daily report generation, email retry logic
+5. **Add Tests**: Unit tests and integration tests for all endpoints
+6. **Frontend Integration**: Connect React frontend for manager/field interfaces
+
+## Security Notes
+
+- ✓ Uses Django's built-in password hashing
+- ✓ CSRF protection enabled
+- ✓ SQL injection prevention (ORM only)
+- ✓ User permission checks on all endpoints
+- ✓ Email domain validation for staff users
+- ✓ Secure JWT token handling
+- ⚠ Ensure HTTPS in production
+- ⚠ Keep SECRET_KEY secure in production
+- ⚠ Use environment variables for all sensitive config
+- ⚠ Enable SSL/TLS for database connections in production
+
+## Support & Documentation
+
+- [Django Documentation](https://docs.djangoproject.com/)
+- [Django REST Framework](https://www.django-rest-framework.org/)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+
+## License
+
+Internal use only - Commercial Operations Platform

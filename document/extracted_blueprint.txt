@@ -1,0 +1,233 @@
+COMMERCIAL OPERATIONS FIELD MANAGEMENT PLATFORM
+Vendor Proposal, Product Blueprint, and AI-Assisted Build Guide
+Prepared for El Gouna Commercial Operations
+Prepared as if by the implementation vendor
+Version 1.0 | English only | Internal + external portal | Notification-based warnings/fines
+1. Executive Summary
+This document sets out the recommended product design, technical architecture, delivery approach, and AI-assisted build plan for a commercial operations platform to support the El Gouna commercial operations team.
+The platform is designed to digitize daily field routes, outlet inspections, maintenance observations, warning/fine notifications, and team supervision. It will support both internal users and external outlet managers from day one.
+The recommended solution is a mobile-friendly web platform, packaged as a Progressive Web App (PWA) for field use, backed by a Python-based Django application and PostgreSQL database. Managers will access a dashboard view, field agents will use a mobile workflow, and outlet managers will use a restricted external portal.
+The solution should be delivered in phases, with a tightly controlled MVP first. The MVP will focus on route execution, near-live field visibility, outlet record history, issue logging, maintenance ticketing, and notice communication.
+2. Confirmed Product Decisions
+3. Product Vision and Business Objectives
+Digitize route-based commercial oversight across the town, including outlet visits and public-realm observations.
+Give managers visibility into field execution, route completion, and agent productivity.
+Create a structured, searchable history per outlet, including historical notices entered before the new platform.
+Allow agents to raise maintenance issues from the field with time, location, and photo evidence.
+Provide outlet managers with a secure portal to view warnings, fines, and official communications.
+Reduce dependence on manual WhatsApp, phone calls, spreadsheets, and email chains.
+4. Target Users and Interfaces
+4.1 Manager Interface
+Live team map with latest known positions and route trails.
+Dashboard for route completion, skipped stops, issue volume, and open notices.
+Route template management and team assignment.
+Outlet history review and legacy record visibility.
+Performance comparison across agents and teams.
+4.2 Field Agent Interface
+Mobile-optimized workflow for starting shift, viewing route, checking in, and logging issues.
+Location capture every 3 minutes while shift is active.
+Fast check-in/check-out flow without mandatory photos for routine visits.
+Photo-backed issue logging for maintenance observations and violations.
+4.3 Outlet Manager Interface
+Restricted portal access to a single outlet or assigned set of outlets.
+View notices, warning/fine history, and supporting information.
+Receive email alerts when new notices are issued.
+Update designated contact details where permitted.
+5. Scope Definition
+5.1 MVP - In Scope
+Internal staff authentication with @elgouna.com restriction.
+External outlet manager portal access.
+Outlet master database with location, contacts, and notes.
+Legacy warning/fine import into outlet history.
+Recurring route templates and automatic daily route generation.
+Shift start/end workflow for field staff.
+Location updates every 3 minutes during active shifts.
+Outlet check-in/check-out workflow with timestamp and GPS.
+Issue logging with mandatory photos for exceptions.
+Warning/fine notice creation as notifications only.
+Maintenance ticket creation and email dispatch.
+Manager dashboard with live map, route completion, and basic productivity views.
+5.2 Phase 2 - Out of Scope for MVP
+Payment collection or financial settlement of fines.
+Formal dispute management workflow for outlets.
+Arabic language support.
+Advanced route optimization or AI-generated route sequencing.
+Payroll integration or HR score export.
+Full enterprise SSO implementation.
+WhatsApp automation, chatbot features, or AI photo analysis.
+6. Solution Architecture
+Recommended architecture: React frontend delivered as a PWA, Django REST API backend, PostgreSQL relational database, Google Maps integration for route and location visualization, and email notification integration for notices and maintenance tickets.
+7. Core Modules
+7.1 Identity and Access Management
+Staff roles: Admin, Manager, Field Agent. External role: Outlet Manager. The permission model must ensure managers only see their teams, agents only see their own route/work, and outlet users only see their own records.
+7.2 Outlet Master Data
+Central database for outlet name, category, address, GPS location, designated contact person, email, phone, and operating notes. Includes ability to upload or manually add legacy notices issued before the platform.
+7.3 Route Planning Engine
+Managers create recurring route templates by zone, stop sequence, and assigned field agent. The system creates daily route instances from templates on the applicable days.
+7.4 Field Execution Workflow
+Agents start shift, allow location permission, see today's assigned route, check in at stops, log notes, and close shift. Check-ins should validate proximity to the assigned location within an agreed radius.
+7.5 Warning/Fine Notifications
+Field agents or managers create a notice against an outlet. The record stores type, reason, amount where relevant, evidence, send status, and outlet history. No payment workflow is included in MVP.
+7.6 Maintenance Ticketing
+Agents report public-realm or infrastructure issues such as lighting, signage, paving, or cleanliness. Tickets should include category, location, issue description, evidence photo, open/closed status, and recipient maintenance team.
+7.7 Manager Control Tower
+Dashboard shows latest field positions, route completion, issue counts, skipped stops, aging tickets, and outlet history. This is the operational cockpit for daily oversight.
+7.8 Reporting and Audit
+Every important action should be timestamped and traceable. Reporting should cover route execution, outlet coverage, notices, tickets, and agent productivity.
+8. Data Model Summary
+9. Key Business Rules
+Location tracking should only occur during active shifts and should stop automatically when the shift ends.
+Routine check-ins do not require photos; issues, violations, and maintenance tickets require photo evidence.
+Route templates should support recurring schedules and a defined stop order.
+Daily route completion should be measured against the generated route instance, not merely against total GPS movement.
+Outlet users may view notices and history but do not dispute or settle fines in MVP.
+Internal staff login should be limited to approved El Gouna email addresses.
+System records must preserve legacy warning/fine history entered from prior offline processes.
+10. Manager Dashboard - Recommended KPIs
+Assigned stops vs completed stops by agent and by route.
+Skipped stops and late stops.
+Latest known position and route trail during active shift.
+Average visit duration and number of valid check-ins.
+Issues raised per day, per zone, and per agent.
+Open maintenance tickets and aging buckets.
+Notice volume by outlet and repeat offenders.
+11. Delivery Roadmap
+12. AI-Assisted Build Strategy
+AI should be used to accelerate delivery, not to replace product design or production engineering judgment. The recommended model is to use AI to generate and refine code modules under human supervision.
+12.1 Where AI should be used
+Generate Django models, serializers, views, and admin screens.
+Generate React pages, forms, table views, and dashboard cards.
+Draft API contracts and validation logic.
+Create CSV import scripts for outlet data and legacy notices.
+Write unit tests and API tests for route, visit, and notice workflows.
+Draft documentation, deployment files, and developer runbooks.
+12.2 Where AI should not be trusted blindly
+Permission and access-control design.
+Location tracking rules and privacy boundaries.
+Production secrets, environment configuration, and infrastructure security.
+Business logic around notice issuance and evidence validation.
+Deployment hardening, backups, and audit controls.
+13. Step-by-Step Guide: Using AI to Actually Build the Platform
+Step 1 - Create the project specification
+Put this document into a working folder and create a short companion file named PRODUCT_SCOPE.md summarizing users, interfaces, MVP modules, and business rules. AI tools perform much better when they are grounded in a stable written scope.
+Step 2 - Decide your build environment
+Use GitHub for source control, VS Code as the development environment, Python virtual environments for the backend, Node.js for the frontend, and a single repository with /backend and /frontend folders.
+Step 3 - Ask AI to scaffold the backend
+Prompt the AI to create a Django project with apps for users, outlets, routes, visits, notices, maintenance, and reporting. Request PostgreSQL-ready settings, environment variables, and Django REST Framework setup.
+Step 4 - Ask AI to scaffold the frontend
+Prompt the AI to create a React application with role-based navigation, responsive layouts, manager dashboard pages, and a mobile-first field interface. Tell it to use a clean corporate operations UI.
+Step 5 - Build the database models first
+Use AI to generate models from the data model in Section 8, then review them manually before running migrations. Do not move into UI work until the database structure is stable.
+Step 6 - Build authentication and roles
+Use AI to implement staff roles and outlet roles, then manually test data segregation. This is one of the highest-risk areas and must be verified early.
+Step 7 - Build outlet master data and legacy import
+Prompt the AI to generate CRUD screens, APIs, and CSV import logic for outlets and legacy notices. Test with a small sample file before loading all historical records.
+Step 8 - Build recurring routes
+Prompt the AI to create route templates, assigned stop order, recurring day logic, and daily route generation jobs. Ask for tests that verify the correct route is generated on the correct day.
+Step 9 - Build field execution flows
+Use AI to create Start Shift, My Route, Check In, Check Out, and Log Issue screens. Make sure the flow remains fast enough for actual field use.
+Step 10 - Add 3-minute location updates
+Prompt the AI to implement browser/mobile geolocation capture every 3 minutes during active shifts, then write the backend endpoint to store those points.
+Step 11 - Add notices and maintenance tickets
+Use AI to generate forms, evidence upload, email sending, and status updates. Review the wording of notices carefully before going live.
+Step 12 - Build the manager dashboard
+Use AI to generate dashboard cards, tables, maps, and route completion indicators. This is where business users will judge the quality of the product.
+Step 13 - Build the outlet portal
+Prompt the AI to generate a restricted portal where outlet managers can log in, view notices, and access history. Keep the interface simple and informational.
+Step 14 - Add tests and deployment
+Use AI to generate unit tests, API tests, and end-to-end smoke tests. Then use it to draft Docker files, deployment notes, and environment setup instructions.
+14. Recommended AI Tools by Use Case
+15. Example AI Prompts to Use During the Build
+Prompt A - Backend scaffold
+Prompt B - Data model
+Prompt C - Route generation
+Prompt D - Field agent UI
+Prompt E - Manager dashboard
+Prompt F - Outlet portal
+16. Implementation Risks and Controls
+17. Immediate Next Actions
+Approve the MVP scope and this product direction.
+Prepare the initial outlet master dataset and any legacy warning/fine records available in spreadsheet form.
+Nominate pilot users: one manager, two to three field agents, and a small outlet sample.
+Set up the code repository, backend environment, frontend environment, and deployment target.
+Begin with data model, authentication, and recurring route logic before UI polish.
+Appendix - Suggested Repository Structure
+Product | Commercial operations web platform with manager dashboard, field agent mobile workflow, and outlet manager portal
+Primary Users | Managers, field agents, commercial outlet managers, administrators
+Core Capabilities | Recurring routes, 3-minute live tracking, check-ins, warnings/fines as notifications, maintenance ticketing, outlet history
+Recommended Stack | React PWA, Django REST Framework, PostgreSQL, Google Maps, email notification service
+Decision Area | Confirmed Direction | Design Impact
+User base | Both internal and external | Requires staff portal plus outlet portal with segmented permissions
+Tracking cadence | Every 3 minutes | Use near-live map updates instead of continuous streaming
+Fines | Notifications only | No payment gateway required in phase 1
+Visit evidence | Photo only for issues | Standard check-ins stay quick; evidence is mandatory for exceptions
+Routes | Recurring routes | System should create daily route instances from route templates
+Language | English | Single-language MVP reduces complexity
+Authentication | Use @elgouna.com for staff | Internal login should restrict allowed email domains
+Outlet actions | Receive only | External portal is informational, not a dispute workflow
+Layer | Recommended Tooling | Purpose | Vendor Note
+Frontend | React + Tailwind + PWA | Manager desktop and field mobile experience | Single codebase reduces delivery time and maintenance load
+Backend | Django + Django REST Framework | Business rules, APIs, permissions, notifications, admin | Best fit for structured internal operations products
+Database | PostgreSQL | Transactional storage for users, routes, visits, outlets, notices, and GPS logs | Reliable and scalable with strong relational modeling
+Maps | Google Maps APIs | Route view, outlet mapping, latest position markers | Use API keys and environment separation from day one
+Storage | Cloud file storage | Photo evidence and attachments | Keep issue photos out of the application server filesystem
+Email | SMTP / Microsoft 365 / SendGrid | Send notices and maintenance tickets | Log send status and failure responses
+Entity | Key Fields | Purpose
+Users | Name, email, phone, role, manager, active flag | Identity across managers, agents, admins, and outlet users
+Teams | Team name, manager, members | Operational grouping and visibility control
+Outlets | Name, category, address, latitude, longitude, manager contact, notes | Master record for each commercial outlet
+Legacy Notices | Date, type, reason, amount, source, attachment | Historical record import before platform go-live
+Route Templates | Zone, assigned agent, recurring days, stop order, active flag | Reusable recurring route definitions
+Daily Routes | Route date, assigned agent, planned stops, completion status | Execution layer generated from templates
+Visits | Check-in, check-out, location, note, status | Evidence of stop execution
+GPS Logs | Agent, timestamp, latitude, longitude, accuracy | Near-live visibility and route trail
+Violations / Notices | Type, reason, severity, amount, send status, evidence | Notification record per outlet
+Maintenance Tickets | Category, location, priority, evidence, status, recipient | Operational issue tracking
+Shifts | Start time, end time, agent, status | Controls when tracking should be active
+Phase | Duration | Outputs | Gate to Proceed
+1 | 1-2 weeks | Product requirements, screen map, data model, wireframes, environment setup | Business sign-off on MVP
+2 | 2-3 weeks | Auth, outlet master data, route templates, daily route generation, admin setup | Data model and workflow validation
+3 | 2-3 weeks | Field agent mobile workflow, 3-minute tracking, check-ins, visit logging | Pilot readiness with internal users
+4 | 2 weeks | Notices, maintenance tickets, email dispatch, manager dashboard | Operational pilot sign-off
+5 | 1-2 weeks | Outlet portal, legacy import, reporting, polishing, UAT fixes | Go-live approval
+Use Case | Suggested Tool Type | How to Use It
+Planning / PRD | ChatGPT or similar | Use it to turn requirements into screen lists, workflows, API contracts, and test cases
+Backend coding | Cursor / Copilot / ChatGPT | Generate Django apps, APIs, models, serializers, and tests
+Frontend coding | Cursor / Copilot / ChatGPT | Generate React pages, forms, and dashboard components
+Database import | ChatGPT or Copilot | Generate CSV import scripts and migration utilities
+Testing | ChatGPT / Copilot | Generate unit tests, API tests, and bug reproduction cases
+Design | Figma AI or similar | Draft quick wireframes before implementation
+Create a production-ready Django REST Framework backend for a commercial operations platform. Use apps named users, outlets, routes, visits, notices, maintenance, and reporting. Use PostgreSQL-ready settings, environment variables, custom user roles, and clear separation between staff users and outlet users. Do not add payment features.
+Generate Django models for outlets, route templates, daily routes, route stops, visits, GPS logs, notices, maintenance tickets, and shifts. Include timestamps, foreign keys, clean naming, and admin-friendly string methods. Assume field agents update their location every 3 minutes.
+Write the business logic and tests for recurring route templates. The route template should support recurring weekdays, assigned agent, stop order, and active flag. The system should generate a daily route instance with planned stops only on applicable days.
+Create a mobile-first React interface for field agents. Include pages for Start Shift, My Route Today, Outlet Check-In, Log Issue, and End Shift. The UI should be quick to use outdoors and should not require photos for normal check-ins.
+Create a manager dashboard in React for a field operations platform. Include latest known agent positions, route completion, skipped stops, open maintenance tickets, recent notices, and agent activity summaries. Use a clean operations-oriented design.
+Create a simple React portal for outlet managers to log in, view notices, view warning/fine history, and update contact details. This portal should be restricted to the outlet user's own records and should not include dispute or payment workflows.
+Risk | Impact | Control
+Permissions failure | A user sees records they should not see | Implement role-based tests and manually test cross-role segregation before pilot
+Weak outlet data | Wrong contact details or wrong locations reduce trust in the system | Clean the outlet master data before full rollout
+Tracking resistance | Field users may perceive location tracking negatively | Limit tracking to active shifts and communicate the operational purpose clearly
+Poor mobile usability | Agents avoid the system if the flow is slow or cluttered | Design for outdoor use with minimum taps and large controls
+Unreliable email flow | Notices or tickets are created but not received | Log send status and retry failed messages
+Scope creep | Project expands before MVP is stabilized | Freeze phase 1 scope and defer non-essential features
+backend/
+  config/
+  apps/
+    users/
+    outlets/
+    routes/
+    visits/
+    notices/
+    maintenance/
+    reporting/
+frontend/
+  src/
+    app/
+    pages/
+    components/
+    services/
+    hooks/
+docs/
+  PRODUCT_SCOPE.md
+  API_CONTRACTS.md
+  DEPLOYMENT.md
