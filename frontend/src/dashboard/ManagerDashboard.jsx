@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import {
   BarChart3,
@@ -14,6 +15,8 @@ import {
  * Overview of team, routes, and operational metrics
  */
 export const ManagerDashboard = () => {
+  const navigate = useNavigate();
+
   return (
     <DashboardLayout pageTitle="Dashboard">
       <div className="space-y-6">
@@ -34,7 +37,10 @@ export const ManagerDashboard = () => {
           </div>
 
           {/* Team Members */}
-          <div className="card hover:shadow-lg">
+          <div
+            className="card hover:shadow-lg cursor-pointer"
+            onClick={() => navigate('/manager/team')}
+          >
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-gray-600 font-medium">Team Members</p>

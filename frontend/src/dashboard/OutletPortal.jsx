@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { AlertCircle, FileText, BarChart3, ExternalLink } from 'lucide-react';
 
@@ -7,6 +8,7 @@ import { AlertCircle, FileText, BarChart3, ExternalLink } from 'lucide-react';
  * Simple, restricted interface for external outlet users
  */
 export const OutletPortal = () => {
+  const navigate = useNavigate();
   return (
     <DashboardLayout pageTitle="Outlet Manager Portal">
       <div className="space-y-6 max-w-4xl">

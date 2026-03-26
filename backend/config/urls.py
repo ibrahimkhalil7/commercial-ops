@@ -27,8 +27,8 @@ urlpatterns = [
     path('api/reporting/', include('apps.reporting.urls', namespace='reporting')),
     
     # Serve React frontend for all other routes (must be last)
-    re_path(r'^(?!api/)(?!admin/)(?!static/).*$', 
-            TemplateView.as_view(template_name='index.html'), 
+    re_path(r'^(?!api/)(?!admin/)(?!static/).*$',
+            TemplateView.as_view(template_name='index.html'),
             name='react_app'),
 ]
 

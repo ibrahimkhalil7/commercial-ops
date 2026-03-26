@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import {
   MapPin,
@@ -14,6 +15,20 @@ import {
  * Mobile-first interface for field operations
  */
 export const FieldAgentDashboard = () => {
+  const navigate = useNavigate();
+  const [shiftActive, setShiftActive] = React.useState(true);
+  const [shiftStartTime, setShiftStartTime] = React.useState('08:00 AM');
+
+  const handleStartShift = () => {
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    setShiftStartTime(time);
+    setShiftActive(true);
+  };
+
+  const handleEndShift = () => {
+    setShiftActive(false);
+  };
   return (
     <DashboardLayout pageTitle="My Route">
       <div className="space-y-6 max-w-2xl">
@@ -22,10 +37,22 @@ export const FieldAgentDashboard = () => {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-green-700 font-medium">Shift Status</p>
-              <p className="text-2xl font-bold text-green-900 mt-1">Active</p>
-              <p className="text-xs text-green-700 mt-2">Started at 08:00 AM</p>
+              <p className="text-2xl font-bold text-green-900 mt-1">
+                {shiftActive ? 'Active' : 'Inactive'}
+              </p>
+              <p className="text-xs text-green-700 mt-2">
+                {shiftActive ? `Started at ${shiftStartTime}` : 'No active shift'}
+              </p>
             </div>
-            <button className="btn btn-danger">End Shift</button>
+            {shiftActive ? (
+              <button className="btn btn-danger" onClick={handleEndShift}>
+                End Shift
+              </button>
+            ) : (
+              <button className="btn btn-success" onClick={handleStartShift}>
+                Start Shift
+              </button>
+            )}
           </div>
         </div>
 
@@ -36,10 +63,18 @@ export const FieldAgentDashboard = () => {
             <span className="badge badge-primary">6 of 8 completed</span>
           </div>
 
-          {/* Progress Bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-            <div className="bg-blue-600 h-2 rounded-full" style={{ width: '75%' }}></div>
-          </div>
+          {!shiftActive && (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
+              <p className="text-sm text-blue-700">Start your shift to view today's route</p>
+            </div>
+          )}
+
+          {shiftActive && (
+            <>
+              {/* Progress Bar */}
+              <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '75%' }}></div>
+              </div>
 
           {/* Route Stops */}
           <div className="space-y-3">
@@ -88,15 +123,25 @@ export const FieldAgentDashboard = () => {
               </div>
             ))}
           </div>
+            </>
+          )}
         </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-4">
-          <button className="btn btn-primary py-4 text-base font-medium">
+          <button
+            className="btn btn-primary py-4 text-base font-medium"
+            onClick={() => navigate('/agent/check-in')}
+            disabled={!shiftActive}
+          >
             <CheckCircle2 className="inline-block mr-2" size={20} />
             Check In
           </button>
-          <button className="btn btn-secondary py-4 text-base font-medium">
+          <button
+            className="btn btn-secondary py-4 text-base font-medium"
+            onClick={() => navigate('/agent/issue')}
+            disabled={!shiftActive}
+          >
             <AlertCircle className="inline-block mr-2" size={20} />
             Log Issue
           </button>

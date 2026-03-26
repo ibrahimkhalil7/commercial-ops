@@ -16,12 +16,20 @@ export const Sidebar = ({ isOpen, onClose }) => {
   const { user } = useAuth();
 
   const navItems = {
-    manager: [
-      { label: 'Dashboard', path: '/manager', icon: LayoutDashboard },
-      { label: 'Routes', path: '/manager/routes', icon: MapPin },
+    admin: [
+      { label: 'Dashboard', path: '/', icon: LayoutDashboard },
       { label: 'Team', path: '/manager/team', icon: Users },
-      { label: 'Notices', path: '/manager/notices', icon: AlertCircle },
-      { label: 'Maintenance', path: '/manager/maintenance', icon: Wrench },
+      { label: 'Outlets', path: '/manager/outlets', icon: MapPin },
+      { label: 'Tasks', path: '/manager/tasks', icon: CheckCircle2 },
+      { label: 'Routes', path: '/manager/routes', icon: MapPin },
+      { label: 'Reports', path: '/manager/reports', icon: BarChart3 },
+    ],
+    manager: [
+      { label: 'Dashboard', path: '/', icon: LayoutDashboard },
+      { label: 'Team', path: '/manager/team', icon: Users },
+      { label: 'Outlets', path: '/manager/outlets', icon: MapPin },
+      { label: 'Tasks', path: '/manager/tasks', icon: CheckCircle2 },
+      { label: 'Routes', path: '/manager/routes', icon: MapPin },
       { label: 'Reports', path: '/manager/reports', icon: BarChart3 },
     ],
     field_agent: [
@@ -56,10 +64,10 @@ export const Sidebar = ({ isOpen, onClose }) => {
           fixed md:sticky top-0 left-0 h-screen w-64 bg-gray-900 text-white
           transform transition-transform duration-300 z-30
           ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-          pt-4
+          pt-4 flex flex-col
         `}
       >
-        <nav className="space-y-2 px-4 mt-16 md:mt-0">
+        <nav className="space-y-2 px-4 mt-16 md:mt-0 flex-1">
           {items.map((item) => {
             const Icon = item.icon;
             return (
@@ -81,6 +89,19 @@ export const Sidebar = ({ isOpen, onClose }) => {
             );
           })}
         </nav>
+
+        {/* Add Outlet Button at Bottom - Not for outlet managers */}
+        {user?.role !== 'outlet_manager' && (
+          <div className="px-4 pb-4 border-t border-gray-700">
+            <NavLink
+              to="/add-outlet"
+              onClick={onClose}
+              className="flex items-center justify-center px-4 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors mt-4"
+            >
+              <span className="text-white font-bold text-sm">+ Add Outlet</span>
+            </NavLink>
+          </div>
+        )}
       </aside>
     </>
   );

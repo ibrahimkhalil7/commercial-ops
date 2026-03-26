@@ -1,8 +1,15 @@
 """URL routing for users app."""
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import UserViewSet, TeamViewSet
 
 app_name = 'users'
 
+# Create router and register viewsets
+router = DefaultRouter()
+router.register(r'', UserViewSet, basename='user')
+router.register(r'teams', TeamViewSet, basename='team')
+
 urlpatterns = [
-    # User management endpoints will be added here
+    path('', include(router.urls)),
 ]

@@ -1,12 +1,20 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getRoleLabel } from '../utils/helpers';
 import { LogOut, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
 export const Header = ({ onMenuClick }) => {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    setShowDropdown(false);
+    navigate('/login');
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
@@ -52,10 +60,7 @@ export const Header = ({ onMenuClick }) => {
                   <p className="text-xs text-gray-500">{user?.email}</p>
                 </div>
                 <button
-                  onClick={() => {
-                    logout();
-                    setShowDropdown(false);
-                  }}
+                  onClick={handleLogout}
                   className="w-full flex items-center space-x-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition"
                 >
                   <LogOut size={16} />

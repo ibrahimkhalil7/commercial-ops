@@ -22,18 +22,35 @@ export const LoginPage = () => {
     const success = await login(credentials.email, credentials.password);
 
     if (success) {
-      // Redirect based on user role
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (user?.role === 'field_agent') {
-        navigate('/agent');
-      } else if (user?.role === 'outlet_manager') {
-        navigate('/outlet');
-      } else {
-        navigate('/');
-      }
+      // Get redirect path based on user role
+      // Wait a moment for the user context to be updated
+      setTimeout(() => {
+        const redirectPath = getRedirectPath();
+        navigate(redirectPath);
+      }, 100);
     } else {
       setLocalError(error || 'Login failed');
     }
+  };
+
+  const getRedirectPath = () => {
+    // Get the user data from local storage since it was just saved
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      switch (user.role) {
+        case 'outlet_manager':
+          return '/outlet';
+        case 'field_agent':
+          return '/agent';
+        case 'admin':
+        case 'manager':
+          return '/';
+        default:
+          return '/';
+      }
+    }
+    return '/';
   };
 
   const handleChange = (e) => {

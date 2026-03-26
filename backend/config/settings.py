@@ -117,7 +117,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static'  # React build output goes here
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Collected static files for production
+STATICFILES_DIRS = [BASE_DIR / 'static']  # Additional directories for development
 
 # Media files (uploaded files, photos)
 MEDIA_URL = '/media/'
