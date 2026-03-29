@@ -10,6 +10,10 @@ import { ManagerTeam } from './dashboard/ManagerTeam';
 import { ManagerTasks } from './dashboard/ManagerTasks';
 import { ManagerRoutes } from './dashboard/ManagerRoutes';
 import { ManagerReports } from './dashboard/ManagerReports';
+import { AdminIncidents } from './dashboard/AdminIncidents';
+import { AdminTickets } from './dashboard/AdminTickets';
+import { AdminNotices } from './dashboard/AdminNotices';
+import { AdminOutletTimeline } from './dashboard/AdminOutletTimeline';
 import { FieldAgentDashboard } from './dashboard/FieldAgentDashboard';
 import { AgentRoute } from './dashboard/AgentRoute';
 import { AgentShift } from './dashboard/AgentShift';
@@ -165,6 +169,45 @@ function App() {
                 />
               }
             />
+<<<<<<< HEAD
+=======
+            <Route
+              path="/admin/incidents"
+              element={
+                <RoleRoute
+                  component={AdminIncidents}
+                  allowedRoles={['admin', 'manager']}
+                />
+              }
+            />
+            <Route
+              path="/admin/tickets"
+              element={
+                <RoleRoute
+                  component={AdminTickets}
+                  allowedRoles={['admin', 'manager']}
+                />
+              }
+            />
+            <Route
+              path="/admin/notices"
+              element={
+                <RoleRoute
+                  component={AdminNotices}
+                  allowedRoles={['admin', 'manager']}
+                />
+              }
+            />
+            <Route
+              path="/admin/outlet-timeline"
+              element={
+                <RoleRoute
+                  component={AdminOutletTimeline}
+                  allowedRoles={['admin', 'manager']}
+                />
+              }
+            />
+>>>>>>> origin/codex/add-location-via-google-maps-y6l057
             <Route path="/manager/team" element={<Navigate to="/admin/team" replace />} />
             <Route path="/manager/outlets" element={<Navigate to="/admin/outlets" replace />} />
             <Route path="/manager/tasks" element={<Navigate to="/admin/tasks" replace />} />
