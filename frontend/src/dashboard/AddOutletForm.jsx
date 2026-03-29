@@ -5,12 +5,34 @@ import { AlertCircle } from 'lucide-react';
 
 export const AddOutletForm = () => {
   const navigate = useNavigate();
+  const extractCoordinatesFromGoogleMapsUrl = (url) => {
+    if (!url) return null;
+
+    const decodedUrl = decodeURIComponent(url.trim());
+    const patterns = [
+      /@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/,
+      /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/,
+      /[?&](?:q|ll)=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/,
+    ];
+
+    for (const pattern of patterns) {
+      const match = decodedUrl.match(pattern);
+      if (match) {
+        return {
+          latitude: parseFloat(match[1]),
+          longitude: parseFloat(match[2]),
+        };
+      }
+    }
+
+    return null;
+  };
+
   const [formData, setFormData] = useState({
     name: '',
     category: '',
     address: '',
-    latitude: '',
-    longitude: '',
+    google_maps_url: '',
     contact_person: '',
     email: '',
     phone: '',
@@ -18,6 +40,8 @@ export const AddOutletForm = () => {
   });
 
   const [categories, setCategories] = useState([]);
+  const [outlets, setOutlets] = useState([]);
+  const [outletsLoading, setOutletsLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -36,7 +60,23 @@ export const AddOutletForm = () => {
       }
     };
     fetchCategories();
+    fetchOutlets();
   }, []);
+
+  const fetchOutlets = async () => {
+    try {
+      setOutletsLoading(true);
+      const response = await fetch('http://localhost:8000/api/outlets/');
+      if (response.ok) {
+        const data = await response.json();
+        setOutlets(data.results || data);
+      }
+    } catch (err) {
+      console.error('Error fetching outlets:', err);
+    } finally {
+      setOutletsLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,8 +94,15 @@ export const AddOutletForm = () => {
 
     try {
       // Validate required fields
-      if (!formData.name || !formData.category || !formData.address || !formData.latitude || !formData.longitude) {
-        setError('Name, category, address, latitude, and longitude are required.');
+      if (!formData.name || !formData.category || !formData.address || !formData.google_maps_url) {
+        setError('Name, category, address, and Google Maps location are required.');
+        setLoading(false);
+        return;
+      }
+
+      const coordinates = extractCoordinatesFromGoogleMapsUrl(formData.google_maps_url);
+      if (!coordinates) {
+        setError('Please paste a valid Google Maps link that contains location coordinates.');
         setLoading(false);
         return;
       }
@@ -66,22 +113,28 @@ export const AddOutletForm = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          latitude: parseFloat(formData.latitude),
-          longitude: parseFloat(formData.longitude),
+          name: formData.name,
+          category: formData.category,
+          address: formData.address,
+          contact_person: formData.contact_person,
+          email: formData.email,
+          phone: formData.phone,
+          operating_notes: formData.operating_notes,
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
         }),
       });
 
       if (response.ok) {
         const newOutlet = await response.json();
         setSuccess(`Outlet "${newOutlet.name}" created successfully!`);
+        fetchOutlets();
         // Reset form
         setFormData({
           name: '',
           category: '',
           address: '',
-          latitude: '',
-          longitude: '',
+          google_maps_url: '',
           contact_person: '',
           email: '',
           phone: '',
@@ -181,38 +234,23 @@ export const AddOutletForm = () => {
               />
             </div>
 
-            {/* Row 3: Latitude and Longitude */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Latitude *
-                </label>
-                <input
-                  type="number"
-                  name="latitude"
-                  value={formData.latitude}
-                  onChange={handleChange}
-                  placeholder="e.g., 30.0131"
-                  step="0.000001"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Longitude *
-                </label>
-                <input
-                  type="number"
-                  name="longitude"
-                  value={formData.longitude}
-                  onChange={handleChange}
-                  placeholder="e.g., 31.3589"
-                  step="0.000001"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
+            {/* Row 3: Google Maps URL */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Google Maps Location *
+              </label>
+              <input
+                type="url"
+                name="google_maps_url"
+                value={formData.google_maps_url}
+                onChange={handleChange}
+                placeholder="Paste Google Maps share link"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Open Google Maps, choose location, click Share, and paste the link here.
+              </p>
             </div>
 
             {/* Row 4: Contact Person and Email */}
@@ -300,6 +338,53 @@ export const AddOutletForm = () => {
           <p className="text-sm text-gray-700">
             <strong>Note:</strong> Fields marked with * are required. All other fields are optional.
           </p>
+        </div>
+
+        {/* Outlet Database View */}
+        <div className="card">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Outlets in Django Database</h3>
+            <button
+              type="button"
+              onClick={fetchOutlets}
+              className="btn btn-secondary text-sm px-3 py-1"
+            >
+              Refresh
+            </button>
+          </div>
+
+          {outletsLoading ? (
+            <div className="text-sm text-gray-600">Loading outlets...</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left border-b border-gray-200">
+                    <th className="py-2 pr-4">Name</th>
+                    <th className="py-2 pr-4">Category</th>
+                    <th className="py-2 pr-4">Address</th>
+                    <th className="py-2 pr-4">Coordinates</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {outlets.map((outlet) => (
+                    <tr key={outlet.id} className="border-b border-gray-100">
+                      <td className="py-2 pr-4 font-medium text-gray-900">{outlet.name}</td>
+                      <td className="py-2 pr-4 text-gray-700">{outlet.category_name || '—'}</td>
+                      <td className="py-2 pr-4 text-gray-700">{outlet.address}</td>
+                      <td className="py-2 pr-4 text-gray-600">
+                        {Number(outlet.latitude).toFixed(6)}, {Number(outlet.longitude).toFixed(6)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {!outlets.length && (
+                <p className="text-sm text-gray-500 py-3">No outlets found.</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </DashboardLayout>

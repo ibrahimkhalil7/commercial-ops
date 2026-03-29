@@ -14,7 +14,7 @@ A production-ready Django REST Framework backend for a commercial field operatio
 
 ## Prerequisites
 
-- Python 3.9+
+- Python 3.10–3.12 (recommended; 3.14 is not yet supported by all dependencies)
 - PostgreSQL 12+
 - Redis (for Celery task queue)
 
@@ -63,6 +63,40 @@ Server will be available at `http://localhost:8000`
 ### 7. Access Admin Interface
 
 Navigate to `http://localhost:8000/admin` and log in with your superuser credentials.
+
+
+## Troubleshooting
+
+### `ModuleNotFoundError: No module named 'rest_framework'`
+
+This means your current Python environment does not have backend dependencies installed (or you are running Django with a different interpreter than the one where dependencies were installed).
+
+1. Activate the same virtual environment you intend to run Django with.
+2. Upgrade installer tooling:
+
+```bash
+python -m pip install --upgrade pip setuptools wheel
+```
+
+3. Install backend dependencies:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+4. Verify Django REST Framework is installed in that environment:
+
+```bash
+python -m pip show djangorestframework
+```
+
+5. Confirm the interpreter path used by Django:
+
+```bash
+python -c "import sys; print(sys.executable)"
+```
+
+If you are on Python 3.14 and still have install/runtime issues, recreate the venv using Python 3.11 or 3.12, then reinstall requirements.
 
 ## Project Structure
 
