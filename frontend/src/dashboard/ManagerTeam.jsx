@@ -30,9 +30,10 @@ export const ManagerTeam = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        // Filter to show only field agents and managers (not outlet managers)
-        const teamMembers = data.filter(user =>
-          user.role === 'field_agent' || user.role === 'manager'
+        const users = Array.isArray(data) ? data : (data.results || []);
+        // Filter to show only field agents and admin users (not outlet managers)
+        const teamMembers = users.filter(user =>
+          user.role === 'field_agent' || user.role === 'admin' || user.role === 'manager'
         );
         // Show demo data if no users in database
         if (teamMembers.length === 0) {
@@ -106,7 +107,7 @@ export const ManagerTeam = () => {
         last_name: 'Karim',
         email: 'mohammed.karim@example.com',
         phone: '+20 123 456 7895',
-        role: 'manager',
+        role: 'admin',
         is_active: true
       },
       {
@@ -224,6 +225,7 @@ export const ManagerTeam = () => {
 
   const getRoleBadge = (role) => {
     const badges = {
+      admin: 'badge badge-primary',
       manager: 'badge badge-primary',
       field_agent: 'badge badge-secondary'
     };
@@ -232,7 +234,8 @@ export const ManagerTeam = () => {
 
   const getRoleLabel = (role) => {
     const labels = {
-      manager: 'Manager',
+      admin: 'Admin',
+      manager: 'Admin',
       field_agent: 'Field Agent'
     };
     return labels[role] || role;
@@ -333,7 +336,7 @@ export const ManagerTeam = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   >
                     <option value="field_agent">Field Agent</option>
-                    <option value="manager">Manager</option>
+                    <option value="admin">Admin</option>
                   </select>
                 </div>
                 <div className="flex space-x-3 pt-4">

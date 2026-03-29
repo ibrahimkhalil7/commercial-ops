@@ -75,7 +75,7 @@ export const ManagerTasks = () => {
       if (response.ok) {
         const data = await response.json();
         const teamMembers = data.filter(user =>
-          user.role === 'field_agent' || user.role === 'manager'
+          user.role === 'field_agent' || user.role === 'admin' || user.role === 'manager'
         );
         setAgents(teamMembers);
       }

@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 
 /**
- * Manager Dashboard
+ * Admin Dashboard
  * Overview of team, routes, and operational metrics
  */
 export const ManagerDashboard = () => {
@@ -39,7 +39,7 @@ export const ManagerDashboard = () => {
           {/* Team Members */}
           <div
             className="card hover:shadow-lg cursor-pointer"
-            onClick={() => navigate('/manager/team')}
+            onClick={() => navigate('/admin/team')}
           >
             <div className="flex items-start justify-between">
               <div>
