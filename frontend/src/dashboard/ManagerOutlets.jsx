@@ -3,6 +3,29 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { Edit, Trash2, Plus, MapPin, Phone, Mail } from 'lucide-react';
 
 export const ManagerOutlets = () => {
+  const extractCoordinatesFromGoogleMapsUrl = (url) => {
+    if (!url) return null;
+
+    const decodedUrl = decodeURIComponent(url.trim());
+    const patterns = [
+      /@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/,
+      /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/,
+      /[?&](?:q|ll)=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/,
+    ];
+
+    for (const pattern of patterns) {
+      const match = decodedUrl.match(pattern);
+      if (match) {
+        return {
+          latitude: parseFloat(match[1]),
+          longitude: parseFloat(match[2]),
+        };
+      }
+    }
+
+    return null;
+  };
+
   const [outlets, setOutlets] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,8 +35,7 @@ export const ManagerOutlets = () => {
     name: '',
     category: '',
     address: '',
-    latitude: '',
-    longitude: '',
+    google_maps_url: '',
     contact_person: '',
     email: '',
     phone: '',
@@ -54,6 +76,12 @@ export const ManagerOutlets = () => {
 
   const handleAddOutlet = async (e) => {
     e.preventDefault();
+    const coordinates = extractCoordinatesFromGoogleMapsUrl(formData.google_maps_url);
+    if (!coordinates) {
+      alert('Please paste a valid Google Maps link that contains coordinates.');
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:8000/api/outlets/', {
         method: 'POST',
@@ -61,16 +89,22 @@ export const ManagerOutlets = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          latitude: parseFloat(formData.latitude),
-          longitude: parseFloat(formData.longitude),
+          name: formData.name,
+          category: formData.category,
+          address: formData.address,
+          contact_person: formData.contact_person,
+          email: formData.email,
+          phone: formData.phone,
+          operating_notes: formData.operating_notes,
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
         }),
       });
 
       if (response.ok) {
         setShowAddForm(false);
         setFormData({
-          name: '', category: '', address: '', latitude: '', longitude: '',
+          name: '', category: '', address: '', google_maps_url: '',
           contact_person: '', email: '', phone: '', operating_notes: ''
         });
         fetchOutlets();
@@ -90,8 +124,7 @@ export const ManagerOutlets = () => {
       name: outlet.name,
       category: outlet.category,
       address: outlet.address,
-      latitude: outlet.latitude.toString(),
-      longitude: outlet.longitude.toString(),
+      google_maps_url: `https://www.google.com/maps?q=${outlet.latitude},${outlet.longitude}`,
       contact_person: outlet.contact_person || '',
       email: outlet.email || '',
       phone: outlet.phone || '',
@@ -101,6 +134,12 @@ export const ManagerOutlets = () => {
 
   const handleUpdateOutlet = async (e) => {
     e.preventDefault();
+    const coordinates = extractCoordinatesFromGoogleMapsUrl(formData.google_maps_url);
+    if (!coordinates) {
+      alert('Please paste a valid Google Maps link that contains coordinates.');
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:8000/api/outlets/${editingOutlet.id}/`, {
         method: 'PUT',
@@ -108,16 +147,22 @@ export const ManagerOutlets = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          latitude: parseFloat(formData.latitude),
-          longitude: parseFloat(formData.longitude),
+          name: formData.name,
+          category: formData.category,
+          address: formData.address,
+          contact_person: formData.contact_person,
+          email: formData.email,
+          phone: formData.phone,
+          operating_notes: formData.operating_notes,
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
         }),
       });
 
       if (response.ok) {
         setEditingOutlet(null);
         setFormData({
-          name: '', category: '', address: '', latitude: '', longitude: '',
+          name: '', category: '', address: '', google_maps_url: '',
           contact_person: '', email: '', phone: '', operating_notes: ''
         });
         fetchOutlets();
@@ -230,33 +275,21 @@ export const ManagerOutlets = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Latitude *
-                    </label>
-                    <input
-                      type="number"
-                      step="0.000001"
-                      value={formData.latitude}
-                      onChange={(e) => setFormData({...formData, latitude: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Longitude *
-                    </label>
-                    <input
-                      type="number"
-                      step="0.000001"
-                      value={formData.longitude}
-                      onChange={(e) => setFormData({...formData, longitude: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Google Maps Location *
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.google_maps_url}
+                    onChange={(e) => setFormData({...formData, google_maps_url: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="Paste Google Maps share link"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Paste a Google Maps link and coordinates will be extracted automatically.
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -318,7 +351,7 @@ export const ManagerOutlets = () => {
                       setShowAddForm(false);
                       setEditingOutlet(null);
                       setFormData({
-                        name: '', category: '', address: '', latitude: '', longitude: '',
+                        name: '', category: '', address: '', google_maps_url: '',
                         contact_person: '', email: '', phone: '', operating_notes: ''
                       });
                     }}

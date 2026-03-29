@@ -33,6 +33,67 @@ class MaintenanceCategory(models.Model):
         return self.name
 
 
+class FieldIncident(models.Model):
+    """Operational field incident captured by agent/admin and linked to outlet/visit."""
+
+    SEVERITY_CHOICES = [
+        ('low', _('Low')),
+        ('medium', _('Medium')),
+        ('high', _('High')),
+        ('critical', _('Critical')),
+    ]
+
+    STATUS_CHOICES = [
+        ('open', _('Open')),
+        ('triaged', _('Triaged')),
+        ('converted_to_ticket', _('Converted to Ticket')),
+        ('closed', _('Closed')),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    outlet = models.ForeignKey(
+        'outlets.Outlet',
+        verbose_name=_('outlet'),
+        on_delete=models.CASCADE,
+        related_name='field_incidents'
+    )
+    visit = models.ForeignKey(
+        'visits.Visit',
+        verbose_name=_('related visit'),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='incidents'
+    )
+    reported_by = models.ForeignKey(
+        'users.User',
+        verbose_name=_('reported by'),
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='field_incidents_reported'
+    )
+    title = models.CharField(_('title'), max_length=255)
+    description = models.TextField(_('description'))
+    severity = models.CharField(_('severity'), max_length=20, choices=SEVERITY_CHOICES, default='medium')
+    status = models.CharField(_('status'), max_length=30, choices=STATUS_CHOICES, default='open')
+    occurred_at = models.DateTimeField(_('occurred at'), null=True, blank=True)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+
+    class Meta:
+        db_table = 'maintenance_field_incident'
+        indexes = [
+            models.Index(fields=['outlet']),
+            models.Index(fields=['status']),
+            models.Index(fields=['severity']),
+            models.Index(fields=['created_at']),
+        ]
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.outlet.name} - {self.title} ({self.get_status_display()})"
+
+
 class MaintenanceTicket(models.Model):
     """
     Infrastructure or public-realm issue ticket.
@@ -127,7 +188,9 @@ class MaintenanceTicket(models.Model):
     # Evidence
     evidence_photo = models.ImageField(
         _('evidence photo'),
-        upload_to='maintenance_evidence/%Y/%m/%d/'
+        upload_to='maintenance_evidence/%Y/%m/%d/',
+        null=True,
+        blank=True
     )
     
     additional_attachments = models.FileField(

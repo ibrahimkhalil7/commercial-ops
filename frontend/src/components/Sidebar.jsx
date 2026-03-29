@@ -18,19 +18,27 @@ export const Sidebar = ({ isOpen, onClose }) => {
   const navItems = {
     admin: [
       { label: 'Dashboard', path: '/', icon: LayoutDashboard },
-      { label: 'Team', path: '/manager/team', icon: Users },
-      { label: 'Outlets', path: '/manager/outlets', icon: MapPin },
-      { label: 'Tasks', path: '/manager/tasks', icon: CheckCircle2 },
-      { label: 'Routes', path: '/manager/routes', icon: MapPin },
-      { label: 'Reports', path: '/manager/reports', icon: BarChart3 },
+      { label: 'Team', path: '/admin/team', icon: Users },
+      { label: 'Outlets', path: '/admin/outlets', icon: MapPin },
+      { label: 'Tasks', path: '/admin/tasks', icon: CheckCircle2 },
+      { label: 'Routes', path: '/admin/routes', icon: MapPin },
+      { label: 'Reports', path: '/admin/reports', icon: BarChart3 },
+      { label: 'Incidents', path: '/admin/incidents', icon: AlertCircle },
+      { label: 'Tickets', path: '/admin/tickets', icon: Wrench },
+      { label: 'Notices', path: '/admin/notices', icon: AlertCircle },
+      { label: 'Outlet Timeline', path: '/admin/outlet-timeline', icon: BarChart3 },
     ],
     manager: [
       { label: 'Dashboard', path: '/', icon: LayoutDashboard },
-      { label: 'Team', path: '/manager/team', icon: Users },
-      { label: 'Outlets', path: '/manager/outlets', icon: MapPin },
-      { label: 'Tasks', path: '/manager/tasks', icon: CheckCircle2 },
-      { label: 'Routes', path: '/manager/routes', icon: MapPin },
-      { label: 'Reports', path: '/manager/reports', icon: BarChart3 },
+      { label: 'Team', path: '/admin/team', icon: Users },
+      { label: 'Outlets', path: '/admin/outlets', icon: MapPin },
+      { label: 'Tasks', path: '/admin/tasks', icon: CheckCircle2 },
+      { label: 'Routes', path: '/admin/routes', icon: MapPin },
+      { label: 'Reports', path: '/admin/reports', icon: BarChart3 },
+      { label: 'Incidents', path: '/admin/incidents', icon: AlertCircle },
+      { label: 'Tickets', path: '/admin/tickets', icon: Wrench },
+      { label: 'Notices', path: '/admin/notices', icon: AlertCircle },
+      { label: 'Outlet Timeline', path: '/admin/outlet-timeline', icon: BarChart3 },
     ],
     field_agent: [
       { label: 'Dashboard', path: '/agent', icon: LayoutDashboard },
@@ -94,7 +102,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
         {user?.role !== 'outlet_manager' && (
           <div className="px-4 pb-4 border-t border-gray-700">
             <NavLink
-              to="/add-outlet"
+              to="/admin/outlets"
               onClick={onClose}
               className="flex items-center justify-center px-4 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors mt-4"
             >
