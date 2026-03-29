@@ -125,7 +125,7 @@ export const LoginPage = () => {
         <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
           <p className="text-xs text-gray-600 font-medium mb-2">Demo Credentials:</p>
           <p className="text-xs text-gray-600">
-            <strong>Manager:</strong> manager@elgouna.com / password
+            <strong>Admin:</strong> manager@elgouna.com / password
           </p>
           <p className="text-xs text-gray-600">
             <strong>Agent:</strong> agent@elgouna.com / password

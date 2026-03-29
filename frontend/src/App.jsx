@@ -7,7 +7,6 @@ import { PrivateRoute, RoleRoute } from './utils/ProtectedRoutes';
 import { LoginPage } from './pages/LoginPage';
 import { ManagerDashboard } from './dashboard/ManagerDashboard';
 import { ManagerTeam } from './dashboard/ManagerTeam';
-import { ManagerOutlets } from './dashboard/ManagerOutlets';
 import { ManagerTasks } from './dashboard/ManagerTasks';
 import { ManagerRoutes } from './dashboard/ManagerRoutes';
 import { ManagerReports } from './dashboard/ManagerReports';
@@ -31,7 +30,7 @@ function App() {
 
           {/* Protected Routes - Dashboard */}
           <Route element={<PrivateRoute />}>
-            {/* Manager Dashboard - accessible by admin and manager roles */}
+            {/* Admin Dashboard - accessible by admin and manager roles */}
             <Route
               path="/"
               element={
@@ -120,9 +119,9 @@ function App() {
               }
             />
 
-            {/* Manager extra views */}
+            {/* Admin extra views */}
             <Route
-              path="/manager/team"
+              path="/admin/team"
               element={
                 <RoleRoute
                   component={ManagerTeam}
@@ -131,16 +130,16 @@ function App() {
               }
             />
             <Route
-              path="/manager/outlets"
+              path="/admin/outlets"
               element={
                 <RoleRoute
-                  component={ManagerOutlets}
+                  component={AddOutletForm}
                   allowedRoles={['admin', 'manager']}
                 />
               }
             />
             <Route
-              path="/manager/tasks"
+              path="/admin/tasks"
               element={
                 <RoleRoute
                   component={ManagerTasks}
@@ -149,7 +148,7 @@ function App() {
               }
             />
             <Route
-              path="/manager/routes"
+              path="/admin/routes"
               element={
                 <RoleRoute
                   component={ManagerRoutes}
@@ -158,7 +157,7 @@ function App() {
               }
             />
             <Route
-              path="/manager/reports"
+              path="/admin/reports"
               element={
                 <RoleRoute
                   component={ManagerReports}
@@ -166,12 +165,13 @@ function App() {
                 />
               }
             />
+            <Route path="/manager/team" element={<Navigate to="/admin/team" replace />} />
+            <Route path="/manager/outlets" element={<Navigate to="/admin/outlets" replace />} />
+            <Route path="/manager/tasks" element={<Navigate to="/admin/tasks" replace />} />
+            <Route path="/manager/routes" element={<Navigate to="/admin/routes" replace />} />
+            <Route path="/manager/reports" element={<Navigate to="/admin/reports" replace />} />
 
-            {/* Add Outlet Form - Available to all authenticated users */}
-            <Route
-              path="/add-outlet"
-              element={<AddOutletForm />}
-            />
+            <Route path="/add-outlet" element={<Navigate to="/admin/outlets" replace />} />
           </Route>
 
           {/* Fallback Routes */}
