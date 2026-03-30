@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { PrivateRoute, RoleRoute } from './utils/ProtectedRoutes';
+import { AppErrorBoundary } from './components/AppErrorBoundary';
 
 // Pages
 import { LoginPage } from './pages/LoginPage';
@@ -27,7 +28,8 @@ import { AddOutletForm } from './dashboard/AddOutletForm';
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <AppErrorBoundary>
+        <BrowserRouter>
         <Routes>
           {/* Public Route */}
           <Route path="/login" element={<LoginPage />} />
@@ -217,7 +219,8 @@ function App() {
           {/* Fallback Routes */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
+        </BrowserRouter>
+      </AppErrorBoundary>
     </AuthProvider>
   );
 }
