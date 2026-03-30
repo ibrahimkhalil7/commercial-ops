@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { PrivateRoute, RoleRoute } from './utils/ProtectedRoutes';
+import { AppErrorBoundary } from './components/AppErrorBoundary';
 
 // Pages
 import { LoginPage } from './pages/LoginPage';
@@ -27,200 +28,109 @@ import { AddOutletForm } from './dashboard/AddOutletForm';
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Route */}
-          <Route path="/login" element={<LoginPage />} />
+      <AppErrorBoundary>
+        <BrowserRouter>
+          <Routes>
+            {/* Public Route */}
+            <Route path="/login" element={<LoginPage />} />
 
-          {/* Protected Routes - Dashboard */}
-          <Route element={<PrivateRoute />}>
-            {/* Admin Dashboard - accessible by admin and manager roles */}
-            <Route
-              path="/"
-              element={
-                <RoleRoute
-                  component={ManagerDashboard}
-                  allowedRoles={['admin', 'manager']}
-                />
-              }
-            />
+            {/* Protected Routes - Dashboard */}
+            <Route element={<PrivateRoute />}>
+              {/* Admin Dashboard - accessible by admin and manager roles */}
+              <Route
+                path="/"
+                element={<RoleRoute component={ManagerDashboard} allowedRoles={['admin', 'manager']} />}
+              />
 
-            {/* Field Agent Dashboard */}
-            <Route
-              path="/agent"
-              element={
-                <RoleRoute
-                  component={FieldAgentDashboard}
-                  allowedRoles={['field_agent']}
-                />
-              }
-            />
+              {/* Field Agent Dashboard */}
+              <Route
+                path="/agent"
+                element={<RoleRoute component={FieldAgentDashboard} allowedRoles={['field_agent']} />}
+              />
 
-            {/* Outlet Portal */}
-            <Route
-              path="/outlet"
-              element={
-                <RoleRoute
-                  component={OutletPortal}
-                  allowedRoles={['outlet_manager']}
-                />
-              }
-            />
-            <Route
-              path="/outlet/notices"
-              element={
-                <RoleRoute
-                  component={OutletNotices}
-                  allowedRoles={['outlet_manager']}
-                />
-              }
-            />
-            <Route
-              path="/outlet/history"
-              element={
-                <RoleRoute
-                  component={OutletHistory}
-                  allowedRoles={['outlet_manager']}
-                />
-              }
-            />
+              {/* Outlet Portal */}
+              <Route
+                path="/outlet"
+                element={<RoleRoute component={OutletPortal} allowedRoles={['outlet_manager']} />}
+              />
+              <Route
+                path="/outlet/notices"
+                element={<RoleRoute component={OutletNotices} allowedRoles={['outlet_manager']} />}
+              />
+              <Route
+                path="/outlet/history"
+                element={<RoleRoute component={OutletHistory} allowedRoles={['outlet_manager']} />}
+              />
 
-            {/* Field Agent extra views */}
-            <Route
-              path="/agent/route"
-              element={
-                <RoleRoute
-                  component={AgentRoute}
-                  allowedRoles={['field_agent']}
-                />
-              }
-            />
-            <Route
-              path="/agent/shift"
-              element={
-                <RoleRoute
-                  component={AgentShift}
-                  allowedRoles={['field_agent']}
-                />
-              }
-            />
-            <Route
-              path="/agent/check-in"
-              element={
-                <RoleRoute
-                  component={AgentCheckIn}
-                  allowedRoles={['field_agent']}
-                />
-              }
-            />
-            <Route
-              path="/agent/issue"
-              element={
-                <RoleRoute
-                  component={AgentIssue}
-                  allowedRoles={['field_agent']}
-                />
-              }
-            />
+              {/* Field Agent extra views */}
+              <Route
+                path="/agent/route"
+                element={<RoleRoute component={AgentRoute} allowedRoles={['field_agent']} />}
+              />
+              <Route
+                path="/agent/shift"
+                element={<RoleRoute component={AgentShift} allowedRoles={['field_agent']} />}
+              />
+              <Route
+                path="/agent/check-in"
+                element={<RoleRoute component={AgentCheckIn} allowedRoles={['field_agent']} />}
+              />
+              <Route
+                path="/agent/issue"
+                element={<RoleRoute component={AgentIssue} allowedRoles={['field_agent']} />}
+              />
 
-            {/* Admin extra views */}
-            <Route
-              path="/admin/team"
-              element={
-                <RoleRoute
-                  component={ManagerTeam}
-                  allowedRoles={['admin', 'manager']}
-                />
-              }
-            />
-            <Route
-              path="/admin/outlets"
-              element={
-                <RoleRoute
-                  component={AddOutletForm}
-                  allowedRoles={['admin', 'manager']}
-                />
-              }
-            />
-            <Route
-              path="/admin/tasks"
-              element={
-                <RoleRoute
-                  component={ManagerTasks}
-                  allowedRoles={['admin', 'manager']}
-                />
-              }
-            />
-            <Route
-              path="/admin/routes"
-              element={
-                <RoleRoute
-                  component={ManagerRoutes}
-                  allowedRoles={['admin', 'manager']}
-                />
-              }
-            />
-            <Route
-              path="/admin/reports"
-              element={
-                <RoleRoute
-                  component={ManagerReports}
-                  allowedRoles={['admin', 'manager']}
-                />
-              }
-            />
-<<<<<<< HEAD
-=======
-            <Route
-              path="/admin/incidents"
-              element={
-                <RoleRoute
-                  component={AdminIncidents}
-                  allowedRoles={['admin', 'manager']}
-                />
-              }
-            />
-            <Route
-              path="/admin/tickets"
-              element={
-                <RoleRoute
-                  component={AdminTickets}
-                  allowedRoles={['admin', 'manager']}
-                />
-              }
-            />
-            <Route
-              path="/admin/notices"
-              element={
-                <RoleRoute
-                  component={AdminNotices}
-                  allowedRoles={['admin', 'manager']}
-                />
-              }
-            />
-            <Route
-              path="/admin/outlet-timeline"
-              element={
-                <RoleRoute
-                  component={AdminOutletTimeline}
-                  allowedRoles={['admin', 'manager']}
-                />
-              }
-            />
->>>>>>> origin/codex/add-location-via-google-maps-y6l057
-            <Route path="/manager/team" element={<Navigate to="/admin/team" replace />} />
-            <Route path="/manager/outlets" element={<Navigate to="/admin/outlets" replace />} />
-            <Route path="/manager/tasks" element={<Navigate to="/admin/tasks" replace />} />
-            <Route path="/manager/routes" element={<Navigate to="/admin/routes" replace />} />
-            <Route path="/manager/reports" element={<Navigate to="/admin/reports" replace />} />
+              {/* Admin extra views */}
+              <Route
+                path="/admin/team"
+                element={<RoleRoute component={ManagerTeam} allowedRoles={['admin', 'manager']} />}
+              />
+              <Route
+                path="/admin/outlets"
+                element={<RoleRoute component={AddOutletForm} allowedRoles={['admin', 'manager']} />}
+              />
+              <Route
+                path="/admin/tasks"
+                element={<RoleRoute component={ManagerTasks} allowedRoles={['admin', 'manager']} />}
+              />
+              <Route
+                path="/admin/routes"
+                element={<RoleRoute component={ManagerRoutes} allowedRoles={['admin', 'manager']} />}
+              />
+              <Route
+                path="/admin/reports"
+                element={<RoleRoute component={ManagerReports} allowedRoles={['admin', 'manager']} />}
+              />
+              <Route
+                path="/admin/incidents"
+                element={<RoleRoute component={AdminIncidents} allowedRoles={['admin', 'manager']} />}
+              />
+              <Route
+                path="/admin/tickets"
+                element={<RoleRoute component={AdminTickets} allowedRoles={['admin', 'manager']} />}
+              />
+              <Route
+                path="/admin/notices"
+                element={<RoleRoute component={AdminNotices} allowedRoles={['admin', 'manager']} />}
+              />
+              <Route
+                path="/admin/outlet-timeline"
+                element={<RoleRoute component={AdminOutletTimeline} allowedRoles={['admin', 'manager']} />}
+              />
 
-            <Route path="/add-outlet" element={<Navigate to="/admin/outlets" replace />} />
-          </Route>
+              <Route path="/manager/team" element={<Navigate to="/admin/team" replace />} />
+              <Route path="/manager/outlets" element={<Navigate to="/admin/outlets" replace />} />
+              <Route path="/manager/tasks" element={<Navigate to="/admin/tasks" replace />} />
+              <Route path="/manager/routes" element={<Navigate to="/admin/routes" replace />} />
+              <Route path="/manager/reports" element={<Navigate to="/admin/reports" replace />} />
+              <Route path="/add-outlet" element={<Navigate to="/admin/outlets" replace />} />
+            </Route>
 
-          {/* Fallback Routes */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
+            {/* Fallback Routes */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AppErrorBoundary>
     </AuthProvider>
   );
 }

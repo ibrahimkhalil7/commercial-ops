@@ -5,7 +5,6 @@ import {
   BarChart3,
   Users,
   CheckCircle2,
-  AlertCircle,
   Wrench,
   TrendingUp,
   MapPin,
@@ -13,11 +12,7 @@ import {
 
 /**
  * Admin Dashboard
-<<<<<<< HEAD
- * Overview of team, routes, and operational metrics
-=======
  * API-driven KPI and activity control center
->>>>>>> origin/codex/add-location-via-google-maps-y6l057
  */
 export const ManagerDashboard = () => {
   const navigate = useNavigate();
