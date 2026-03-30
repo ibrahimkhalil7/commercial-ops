@@ -23,6 +23,13 @@ export const Sidebar = ({ isOpen, onClose }) => {
       { label: 'Tasks', path: '/admin/tasks', icon: CheckCircle2 },
       { label: 'Routes', path: '/admin/routes', icon: MapPin },
       { label: 'Reports', path: '/admin/reports', icon: BarChart3 },
+<<<<<<< HEAD
+=======
+      { label: 'Incidents', path: '/admin/incidents', icon: AlertCircle },
+      { label: 'Tickets', path: '/admin/tickets', icon: Wrench },
+      { label: 'Notices', path: '/admin/notices', icon: AlertCircle },
+      { label: 'Outlet Timeline', path: '/admin/outlet-timeline', icon: BarChart3 },
+>>>>>>> origin/codex/add-location-via-google-maps-y6l057
     ],
     manager: [
       { label: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -31,6 +38,13 @@ export const Sidebar = ({ isOpen, onClose }) => {
       { label: 'Tasks', path: '/admin/tasks', icon: CheckCircle2 },
       { label: 'Routes', path: '/admin/routes', icon: MapPin },
       { label: 'Reports', path: '/admin/reports', icon: BarChart3 },
+<<<<<<< HEAD
+=======
+      { label: 'Incidents', path: '/admin/incidents', icon: AlertCircle },
+      { label: 'Tickets', path: '/admin/tickets', icon: Wrench },
+      { label: 'Notices', path: '/admin/notices', icon: AlertCircle },
+      { label: 'Outlet Timeline', path: '/admin/outlet-timeline', icon: BarChart3 },
+>>>>>>> origin/codex/add-location-via-google-maps-y6l057
     ],
     field_agent: [
       { label: 'Dashboard', path: '/agent', icon: LayoutDashboard },
