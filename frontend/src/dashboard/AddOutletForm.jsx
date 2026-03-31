@@ -3,6 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { AlertCircle } from 'lucide-react';
 
+const API_BASE = '/api';
+
+const getAuthHeader = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 export const AddOutletForm = () => {
   const navigate = useNavigate();
   const extractCoordinatesFromGoogleMapsUrl = (url) => {
@@ -50,10 +57,14 @@ export const AddOutletForm = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/outlets/categories/');
+        const response = await fetch(`${API_BASE}/outlets/categories/`, {
+          headers: getAuthHeader(),
+        });
         if (response.ok) {
           const data = await response.json();
           setCategories(data.results || data);
+        } else {
+          console.error('Error fetching categories:', response.status, response.statusText);
         }
       } catch (err) {
         console.error('Error fetching categories:', err);
@@ -66,10 +77,14 @@ export const AddOutletForm = () => {
   const fetchOutlets = async () => {
     try {
       setOutletsLoading(true);
-      const response = await fetch('http://localhost:8000/api/outlets/');
+      const response = await fetch(`${API_BASE}/outlets/`, {
+        headers: getAuthHeader(),
+      });
       if (response.ok) {
         const data = await response.json();
         setOutlets(data.results || data);
+      } else {
+        console.error('Error fetching outlets:', response.status, response.statusText);
       }
     } catch (err) {
       console.error('Error fetching outlets:', err);
@@ -107,10 +122,11 @@ export const AddOutletForm = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:8000/api/outlets/', {
+      const response = await fetch(`${API_BASE}/outlets/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeader(),
         },
         body: JSON.stringify({
           name: formData.name,
