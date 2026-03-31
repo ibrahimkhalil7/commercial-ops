@@ -20,7 +20,6 @@ export const Sidebar = ({ isOpen, onClose }) => {
       { label: 'Dashboard', path: '/', icon: LayoutDashboard },
       { label: 'Team', path: '/admin/team', icon: Users },
       { label: 'Outlets', path: '/admin/outlets', icon: MapPin },
-      { label: 'Tasks', path: '/admin/tasks', icon: CheckCircle2 },
       { label: 'Routes', path: '/admin/routes', icon: MapPin },
       { label: 'Reports', path: '/admin/reports', icon: BarChart3 },
       { label: 'Incidents', path: '/admin/incidents', icon: AlertCircle },
@@ -32,7 +31,6 @@ export const Sidebar = ({ isOpen, onClose }) => {
       { label: 'Dashboard', path: '/', icon: LayoutDashboard },
       { label: 'Team', path: '/admin/team', icon: Users },
       { label: 'Outlets', path: '/admin/outlets', icon: MapPin },
-      { label: 'Tasks', path: '/admin/tasks', icon: CheckCircle2 },
       { label: 'Routes', path: '/admin/routes', icon: MapPin },
       { label: 'Reports', path: '/admin/reports', icon: BarChart3 },
       { label: 'Incidents', path: '/admin/incidents', icon: AlertCircle },
@@ -43,12 +41,12 @@ export const Sidebar = ({ isOpen, onClose }) => {
     field_agent: [
       { label: 'Dashboard', path: '/agent', icon: LayoutDashboard },
       { label: 'My Route', path: '/agent/route', icon: MapPin },
-      { label: 'Start Shift', path: '/agent/shift', icon: Zap },
+      { label: 'Shift', path: '/agent/shift', icon: Zap },
       { label: 'Check In', path: '/agent/check-in', icon: CheckCircle2 },
       { label: 'Log Issue', path: '/agent/issue', icon: AlertCircle },
     ],
     outlet_manager: [
-      { label: 'Dashboard', path: '/outlet', icon: LayoutDashboard },
+      { label: 'Overview', path: '/outlet', icon: LayoutDashboard },
       { label: 'Notices', path: '/outlet/notices', icon: AlertCircle },
       { label: 'History', path: '/outlet/history', icon: BarChart3 },
     ],
@@ -58,15 +56,8 @@ export const Sidebar = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
-          onClick={onClose}
-        />
-      )}
+      {isOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden" onClick={onClose} />}
 
-      {/* Sidebar */}
       <aside
         className={`
           fixed md:sticky top-0 left-0 h-screen w-64 bg-gray-900 text-white
@@ -85,9 +76,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
                 onClick={onClose}
                 className={({ isActive }) =>
                   `flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-800'
+                    isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800'
                   }`
                 }
               >
@@ -98,8 +87,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
           })}
         </nav>
 
-        {/* Add Outlet Button at Bottom - Not for outlet managers */}
-        {user?.role !== 'outlet_manager' && (
+        {(user?.role === 'admin' || user?.role === 'manager') && (
           <div className="px-4 pb-4 border-t border-gray-700">
             <NavLink
               to="/admin/outlets"

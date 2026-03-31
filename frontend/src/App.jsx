@@ -8,7 +8,6 @@ import { AppErrorBoundary } from './components/AppErrorBoundary';
 import { LoginPage } from './pages/LoginPage';
 import { ManagerDashboard } from './dashboard/ManagerDashboard';
 import { ManagerTeam } from './dashboard/ManagerTeam';
-import { ManagerTasks } from './dashboard/ManagerTasks';
 import { ManagerRoutes } from './dashboard/ManagerRoutes';
 import { ManagerReports } from './dashboard/ManagerReports';
 import { AdminIncidents } from './dashboard/AdminIncidents';
@@ -90,10 +89,6 @@ function App() {
                 element={<RoleRoute component={AddOutletForm} allowedRoles={['admin', 'manager']} />}
               />
               <Route
-                path="/admin/tasks"
-                element={<RoleRoute component={ManagerTasks} allowedRoles={['admin', 'manager']} />}
-              />
-              <Route
                 path="/admin/routes"
                 element={<RoleRoute component={ManagerRoutes} allowedRoles={['admin', 'manager']} />}
               />
@@ -120,7 +115,6 @@ function App() {
 
               <Route path="/manager/team" element={<Navigate to="/admin/team" replace />} />
               <Route path="/manager/outlets" element={<Navigate to="/admin/outlets" replace />} />
-              <Route path="/manager/tasks" element={<Navigate to="/admin/tasks" replace />} />
               <Route path="/manager/routes" element={<Navigate to="/admin/routes" replace />} />
               <Route path="/manager/reports" element={<Navigate to="/admin/reports" replace />} />
               <Route path="/add-outlet" element={<Navigate to="/admin/outlets" replace />} />

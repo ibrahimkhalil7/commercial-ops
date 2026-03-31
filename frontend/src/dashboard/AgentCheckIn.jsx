@@ -9,6 +9,7 @@ export const AgentCheckIn = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [skipReason, setSkipReason] = useState({});
   const [locationError, setLocationError] = useState('');
+  const [actionError, setActionError] = useState('');
 
   useEffect(() => {
     fetchMyRoutes();
@@ -55,9 +56,10 @@ export const AgentCheckIn = () => {
       });
       if (!response.ok) {
         const error = await response.json();
-        alert(error.detail || 'Action failed');
+        setActionError(error.detail || 'Action failed');
         return;
       }
+      setActionError('');
       await fetchVisitsForRoute(selectedRoute);
     } finally {
       setActionLoading(false);
@@ -138,9 +140,9 @@ export const AgentCheckIn = () => {
         </div>
 
         <div className="card overflow-x-auto">
-          {locationError && (
+          {(locationError || actionError) && (
             <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
-              {locationError}
+              {locationError || actionError}
             </div>
           )}
           <table className="table w-full">

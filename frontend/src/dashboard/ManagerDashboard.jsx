@@ -139,8 +139,8 @@ export const ManagerDashboard = () => {
             <div className="bg-gray-100 rounded-lg h-80 flex items-center justify-center">
               <div className="text-center">
                 <MapPin className="text-gray-400 mx-auto mb-2" size={48} />
-                <p className="text-gray-600">GPS feed available via /api/visits/gps-logs/</p>
-                <p className="text-xs text-gray-500">Map UI integration next step</p>
+                <p className="text-gray-600">Live GPS logs are available from field activity records</p>
+                <p className="text-xs text-gray-500">Map visualization is not enabled in this build</p>
               </div>
             </div>
           </div>

@@ -10,7 +10,15 @@ from .serializers import UserSerializer, TeamSerializer
 
 
 class IsAdminUserRole(permissions.BasePermission):
-    """Allow only system admin role (or superuser)."""
+    """Allow admin and manager roles for read-only internal access."""
+
+    def has_permission(self, request, view):
+        user = request.user
+        return bool(user and user.is_authenticated and (user.is_superuser or user.role in [User.ADMIN, User.MANAGER]))
+
+
+class IsAdminOnlyRole(permissions.BasePermission):
+    """Allow only admin role for mutating user records."""
 
     def has_permission(self, request, view):
         user = request.user
@@ -27,11 +35,13 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'me':
             return [IsAuthenticated()]
-        return [IsAdminUserRole()]
+        if self.action in ['list', 'retrieve']:
+            return [IsAdminUserRole()]
+        return [IsAdminOnlyRole()]
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser or user.role == User.ADMIN:
+        if user.is_superuser or user.role in [User.ADMIN, User.MANAGER]:
             return User.objects.all()
         return User.objects.filter(id=user.id)
 
