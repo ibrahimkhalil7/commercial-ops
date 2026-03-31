@@ -121,17 +121,10 @@ export const LoginPage = () => {
           )}
         </button>
 
-        {/* Demo Credentials Note */}
         <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-          <p className="text-xs text-gray-600 font-medium mb-2">Demo Credentials:</p>
-          <p className="text-xs text-gray-600">
-            <strong>Admin:</strong> manager@elgouna.com / password
-          </p>
-          <p className="text-xs text-gray-600">
-            <strong>Agent:</strong> agent@elgouna.com / password
-          </p>
-          <p className="text-xs text-gray-600">
-            <strong>Outlet:</strong> outlet@example.com / password
+          <p className="text-xs text-gray-700 font-medium">Need access?</p>
+          <p className="text-xs text-gray-600 mt-1">
+            Contact Commercial Operations administration to activate your internal account.
           </p>
         </div>
       </form>

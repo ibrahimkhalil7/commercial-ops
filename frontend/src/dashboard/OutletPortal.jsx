@@ -1,163 +1,77 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
-import { AlertCircle, FileText, BarChart3, ExternalLink } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
-/**
- * Outlet Manager Portal
- * Simple, restricted interface for external outlet users
- */
 export const OutletPortal = () => {
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [notices, setNotices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const response = await fetch('/api/notices/', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        if (!response.ok) {
+          setError('Notices are not available for this account yet.');
+          return;
+        }
+        const data = await response.json();
+        setNotices(data.results || data);
+      } catch {
+        setError('Unable to load outlet notices right now.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  const unresolvedCount = notices.filter((n) => n.send_status !== 'sent').length;
+
   return (
-    <DashboardLayout pageTitle="Outlet Manager Portal">
-      <div className="space-y-6 max-w-4xl">
-        {/* Outlet Information Card */}
+    <DashboardLayout pageTitle="Outlet Overview">
+      <div className="space-y-4 max-w-4xl">
         <div className="card">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Your Outlet</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <p className="text-sm text-gray-600">Outlet Name</p>
-              <p className="text-lg font-semibold text-gray-900 mt-1">Downtown Plaza</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Category</p>
-              <p className="text-lg font-semibold text-gray-900 mt-1">Retail</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Location</p>
-              <p className="text-lg font-semibold text-gray-900 mt-1">Cairo, Egypt</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Contact</p>
-              <p className="text-lg font-semibold text-gray-900 mt-1">manager@outlet.com</p>
-            </div>
-          </div>
+          <h3 className="font-semibold text-lg">Account Summary</h3>
+          <p className="text-sm text-gray-600 mt-2">Signed in as: {user?.email}</p>
+          <p className="text-sm text-gray-600">Role: Outlet Manager</p>
         </div>
 
-        {/* Summary Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="card">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-medium">Recent Notices</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">3</p>
+        {loading && <div className="card text-gray-500">Loading outlet data...</div>}
+        {!loading && error && <div className="card border border-amber-200 bg-amber-50 text-amber-800">{error}</div>}
+
+        {!loading && !error && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="card">
+                <p className="text-sm text-gray-500">Total Notices</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{notices.length}</p>
               </div>
-              <AlertCircle className="text-orange-600" size={24} />
-            </div>
-          </div>
-
-          <div className="card">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-medium">This Month</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">2</p>
-              </div>
-              <FileText className="text-blue-600" size={24} />
-            </div>
-          </div>
-
-          <div className="card">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-medium">Compliance</p>
-                <p className="text-3xl font-bold text-green-600 mt-2">92%</p>
-              </div>
-              <BarChart3 className="text-green-600" size={24} />
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Notices */}
-        <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Notices</h3>
-          <div className="overflow-x-auto">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Type</th>
-                  <th>Description</th>
-                  <th>Status</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  {
-                    date: 'Mar 20, 2026',
-                    type: 'Warning',
-                    desc: 'Missing promotional signage',
-                    status: 'active',
-                  },
-                  {
-                    date: 'Mar 15, 2026',
-                    type: 'Fine',
-                    desc: 'Cleanliness violation',
-                    status: 'active',
-                  },
-                  {
-                    date: 'Mar 10, 2026',
-                    type: 'Notice',
-                    desc: 'Operational update',
-                    status: 'read',
-                  },
-                ].map((notice, idx) => (
-                  <tr key={idx}>
-                    <td className="text-sm">{notice.date}</td>
-                    <td>
-                      <span className={`badge badge-${notice.type.toLowerCase()}`}>
-                        {notice.type}
-                      </span>
-                    </td>
-                    <td className="text-sm">{notice.desc}</td>
-                    <td>
-                      <span
-                        className={`badge ${
-                          notice.status === 'active'
-                            ? 'badge-danger'
-                            : 'badge-gray'
-                        }`}
-                      >
-                        {notice.status}
-                      </span>
-                    </td>
-                    <td className="text-right">
-                      <button className="text-blue-600 hover:text-blue-700">
-                        <ExternalLink size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Notice Details */}
-        <div className="card border-l-4 border-orange-500">
-          <div className="flex items-start space-x-4">
-            <AlertCircle className="text-orange-600 mt-1 flex-shrink-0" size={24} />
-            <div>
-              <h4 className="font-semibold text-gray-900">Latest Notice</h4>
-              <p className="text-gray-600 mt-2">Missing promotional signage is required</p>
-              <div className="mt-4 flex space-x-2">
-                <button className="btn btn-secondary btn-sm">View Details</button>
-                <button className="btn btn-secondary btn-sm">Download PDF</button>
+              <div className="card">
+                <p className="text-sm text-gray-500">Pending Communication Status</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{unresolvedCount}</p>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Message */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-gray-700">
-            <strong>Note:</strong> This portal is for viewing notices and outlet history only.
-            For disputes or payment inquiries, please contact your assigned manager directly.
-          </p>
-        </div>
+            <div className="card">
+              <h3 className="font-semibold text-lg">Latest Compliance Actions</h3>
+              {notices.length ? (
+                <ul className="mt-3 space-y-2">
+                  {notices.slice(0, 5).map((n) => (
+                    <li key={n.id} className="text-sm">
+                      {new Date(n.issued_at).toLocaleDateString()} • {n.notice_type} • {n.reason}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500 mt-3">No compliance actions recorded.</p>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </DashboardLayout>
   );

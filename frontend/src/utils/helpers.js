@@ -33,7 +33,7 @@ export const formatTime = (date) => {
 export const getRoleLabel = (role) => {
   const labels = {
     admin: 'Administrator',
-    manager: 'Administrator',
+    manager: 'Manager',
     field_agent: 'Field Agent',
     outlet_manager: 'Outlet Manager',
   };
