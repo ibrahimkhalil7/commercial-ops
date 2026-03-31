@@ -1,3 +1,8 @@
+<<<<<<< Updated upstream
+=======
+cd "D:\OneDrive - OrascomDH\Users\ibrahim.amr\Desktop\commercial-ops\backend"
+<<<<<<< HEAD
+>>>>>>> Stashed changes
 @echo off
 REM Build script for Commercial Operations Platform
 REM This builds the React frontend and serves it with Django
