@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { AlertCircle } from 'lucide-react';
-
-const API_BASE = '/api';
-
-const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import { apiUrl, authHeader } from '../utils/api';
 
 export const AddOutletForm = () => {
   const navigate = useNavigate();
@@ -47,6 +41,8 @@ export const AddOutletForm = () => {
   });
 
   const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState('');
   const [outlets, setOutlets] = useState([]);
   const [outletsLoading, setOutletsLoading] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -57,17 +53,22 @@ export const AddOutletForm = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch(`${API_BASE}/outlets/categories/`, {
-          headers: getAuthHeader(),
+        setCategoriesLoading(true);
+        setCategoriesError('');
+        const response = await fetch(apiUrl('/outlets/categories/'), {
+          headers: authHeader(),
         });
         if (response.ok) {
           const data = await response.json();
           setCategories(data.results || data);
         } else {
-          console.error('Error fetching categories:', response.status, response.statusText);
+          setCategoriesError('Unable to load outlet categories. Please refresh or contact support.');
         }
       } catch (err) {
         console.error('Error fetching categories:', err);
+        setCategoriesError('Unable to load outlet categories. Please check your connection.');
+      } finally {
+        setCategoriesLoading(false);
       }
     };
     fetchCategories();
@@ -77,8 +78,8 @@ export const AddOutletForm = () => {
   const fetchOutlets = async () => {
     try {
       setOutletsLoading(true);
-      const response = await fetch(`${API_BASE}/outlets/`, {
-        headers: getAuthHeader(),
+      const response = await fetch(apiUrl('/outlets/'), {
+        headers: authHeader(),
       });
       if (response.ok) {
         const data = await response.json();
@@ -122,11 +123,11 @@ export const AddOutletForm = () => {
         return;
       }
 
-      const response = await fetch(`${API_BASE}/outlets/`, {
+      const response = await fetch(apiUrl('/outlets/'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...getAuthHeader(),
+          ...authHeader(),
         },
         body: JSON.stringify({
           name: formData.name,
@@ -157,7 +158,7 @@ export const AddOutletForm = () => {
           operating_notes: '',
         });
         // Redirect after 2 seconds
-        setTimeout(() => navigate('/'), 2000);
+        setTimeout(() => navigate('/admin/outlets'), 1200);
       } else {
         const errorData = await response.json();
         setError(
@@ -221,16 +222,20 @@ export const AddOutletForm = () => {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
+                  disabled={categoriesLoading || !!categoriesError}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 >
-                  <option value="">Select a category</option>
+                  <option value="">
+                    {categoriesLoading ? 'Loading categories...' : 'Select a category'}
+                  </option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.name}
                     </option>
                   ))}
                 </select>
+                {categoriesError && <p className="text-xs text-red-600 mt-1">{categoriesError}</p>}
               </div>
             </div>
 

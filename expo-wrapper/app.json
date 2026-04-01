@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "El Gouna Ops",
+    "slug": "el-gouna-ops-wrapper",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "extra": {
+      "portalUrl": "https://your-frontend.vercel.app"
+    }
+  }
+}
