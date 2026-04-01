@@ -15,7 +15,7 @@ from .serializers import (
 class IsAdminOrFieldAgent(permissions.BasePermission):
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated and (
-            request.user.is_superuser or request.user.role in ['admin', 'field_agent']
+            request.user.is_superuser or request.user.role in ['admin', 'manager', 'field_agent']
         ))
 
 
@@ -33,7 +33,7 @@ class FieldIncidentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         qs = super().get_queryset()
         user = self.request.user
-        if user.is_superuser or user.role == 'admin':
+        if user.is_superuser or user.role in ['admin', 'manager']:
             return qs
         return qs.filter(reported_by=user)
 
@@ -96,7 +96,7 @@ class MaintenanceTicketViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         qs = super().get_queryset()
         user = self.request.user
-        if user.is_superuser or user.role == 'admin':
+        if user.is_superuser or user.role in ['admin', 'manager']:
             return qs
         return qs.filter(reported_by=user)
 

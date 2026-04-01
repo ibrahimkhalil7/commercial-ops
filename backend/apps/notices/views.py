@@ -8,23 +8,36 @@ from .models import Notice
 from .serializers import NoticeSerializer
 
 
-class IsAdminOrFieldAgent(permissions.BasePermission):
+class IsNoticeReader(permissions.BasePermission):
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated and (
-            request.user.is_superuser or request.user.role in ['admin', 'field_agent']
+            request.user.is_superuser or request.user.role in ['admin', 'manager', 'field_agent', 'outlet_manager']
+        ))
+
+
+class IsNoticeWriter(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and (
+            request.user.is_superuser or request.user.role in ['admin', 'manager', 'field_agent']
         ))
 
 
 class NoticeViewSet(viewsets.ModelViewSet):
     queryset = Notice.objects.all().select_related('outlet', 'visit', 'created_by')
     serializer_class = NoticeSerializer
-    permission_classes = [IsAdminOrFieldAgent]
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [IsNoticeReader()]
+        return [IsNoticeWriter()]
 
     def get_queryset(self):
         qs = super().get_queryset()
         user = self.request.user
-        if user.is_superuser or user.role == 'admin':
+        if user.is_superuser or user.role in ['admin', 'manager']:
             return qs
+        if user.role == 'outlet_manager':
+            return qs.filter(outlet__outlet_manager_user=user)
         return qs.filter(created_by=user)
 
     def perform_create(self, serializer):
