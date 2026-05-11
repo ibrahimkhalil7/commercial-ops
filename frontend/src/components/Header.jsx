@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getRoleLabel } from '../utils/helpers';
-import { LogOut, Menu, X } from 'lucide-react';
+import { LogOut, Menu } from 'lucide-react';
 import { useState } from 'react';
 
 export const Header = ({ onMenuClick }) => {

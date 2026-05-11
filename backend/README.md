@@ -1,4 +1,40 @@
-# Commercial Operations Platform - Django Backend
+# Backend - Local Development
+
+Quick notes for local development and troubleshooting.
+
+Setup (recommended):
+
+1. Create and activate a Python virtualenv in the project root:
+
+```powershell
+python -m venv .venv
+& .venv\Scripts\Activate.ps1
+```
+
+2. Install minimal requirements (recommended for local dev on Windows):
+
+```powershell
+python -m pip install -r backend/requirements-minimal.txt
+```
+
+3. Optional: install full requirements on a platform with build tools (Linux/macOS or Windows with appropriate build toolchain):
+
+```powershell
+python -m pip install -r backend/requirements.txt
+```
+
+Notes:
+- The repository contains a small `backend/PIL/__init__.py` stub to allow Django to start without the `Pillow` binary on Windows development machines. This is strictly a local-dev convenience; install the real `Pillow` package in production or CI.
+- `psycopg2-binary` installation is skipped on Windows in `requirements.txt` to avoid needing `pg_config`. Use Postgres in deployments with the appropriate dependency installed.
+
+Running locally:
+
+```powershell
+# apply migrations (sqlite default)
+python backend\manage.py migrate
+# start server
+python backend\manage.py runserver
+```# Commercial Operations Platform - Django Backend
 
 A production-ready Django REST Framework backend for a commercial field operations platform with route management, field agent tracking, outlet management, and operational oversight.
 

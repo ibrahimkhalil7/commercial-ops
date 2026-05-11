@@ -1,0 +1,58 @@
+name: CI - Build & E2E Smoke
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install system packages for Pillow/psycopg2
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libpq-dev libjpeg-dev zlib1g-dev libpng-dev libtiff-dev libfreetype6-dev
+
+      - name: Install backend requirements
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+          # remove local PIL stub if present so real Pillow can be installed/imported
+          if [ -d backend/PIL ]; then rm -rf backend/PIL; fi
+          python -m pip install -r backend/requirements.txt
+
+      - name: Install frontend deps
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Serve frontend (http-server)
+        run: |
+          npm install -g http-server
+          # serve the built dist on port 4173
+          nohup http-server frontend/dist -p 4173 &
+
+      - name: Migrate DB
+        run: |
+          source .ve
