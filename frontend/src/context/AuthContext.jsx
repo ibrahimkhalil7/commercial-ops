@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
+import { request } from '../services/httpClient';
 
 export const AuthContext = createContext(null);
 
@@ -22,20 +23,11 @@ export const AuthProvider = ({ children }) => {
 
   const verifyToken = async () => {
     try {
-      const response = await fetch('/api/users/me/', {
+      const userData = await request('/api/users/me/', {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
-      } else {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setToken(null);
-        setUser(null);
-      }
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
     } catch (err) {
       console.error('Token verification error:', err);
       localStorage.removeItem('token');
@@ -52,32 +44,21 @@ export const AuthProvider = ({ children }) => {
     setError(null);
 
     try {
-      const response = await fetch('/api/auth/token/', {
+      const data = await request('/api/auth/token/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
-      if (!response.ok) {
-        throw new Error('Invalid credentials');
-      }
-
-      const data = await response.json();
       const newToken = data.access;
 
       setToken(newToken);
       localStorage.setItem('token', newToken);
 
       // Fetch user details
-      const userResponse = await fetch('/api/users/me/', {
+      const userData = await request('/api/users/me/', {
         headers: { Authorization: `Bearer ${newToken}` },
       });
-
-      if (userResponse.ok) {
-        const userData = await userResponse.json();
-        setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
-      }
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
 
       return true;
     } catch (err) {
