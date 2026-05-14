@@ -55,4 +55,15 @@ jobs:
 
       - name: Migrate DB
         run: |
-          source .ve
+          source .venv/bin/activate
+          python backend/manage.py migrate --noinput
+
+      - name: Install Playwright browsers
+        run: |
+          cd frontend
+          npx playwright install --with-deps
+
+      - name: Run Playwright E2E smoke tests
+        run: |
+          cd frontend
+          npx playwright test --config=playwright.config.cjs --reporter=list

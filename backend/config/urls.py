@@ -9,8 +9,11 @@ from django.conf.urls.static import static
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.http import JsonResponse
 
 urlpatterns = [
+    # Health check endpoint
+    path('health/', lambda request: JsonResponse({'status': 'ok'})),
     path('admin/', admin.site.urls),
     
     # JWT Authentication endpoints

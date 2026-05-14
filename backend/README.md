@@ -34,6 +34,30 @@ Running locally:
 python backend\manage.py migrate
 # start server
 python backend\manage.py runserver
+
+Deployment (Docker)
+-------------------
+
+1. Create a `.env` file from the repository root using `.env.example` and fill production values.
+
+2. Build the backend Docker image (from project root):
+
+```bash
+docker build -t commercial-ops-backend -f backend/Dockerfile .
+```
+
+3. Run the container (example, using Postgres and Redis services):
+
+```bash
+docker run --rm -p 8000:8000 --env-file .env --name commercial-ops-backend commercial-ops-backend
+```
+
+4. The container runs migrations and starts `gunicorn` serving the application on port 8000.
+
+Notes:
+- The Dockerfile installs full `requirements.txt` and requires system libraries to build `Pillow` and `psycopg2`.
+- The repo contains a local `backend/PIL/__init__.py` stub used for Windows local dev. CI and the Dockerfile remove this stub before installing the real `Pillow` package so production uses real image handling.
+
 ```# Commercial Operations Platform - Django Backend
 
 A production-ready Django REST Framework backend for a commercial field operations platform with route management, field agent tracking, outlet management, and operational oversight.
